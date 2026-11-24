@@ -8,11 +8,16 @@ from selenium.webdriver.support.ui import Select
 
 from selenium.webdriver.common.action_chains import ActionChains
 
-import time
+from selenium.webdriver.support.ui import WebDriverWait
+
+from selenium.webdriver.support import expected_conditions as EC 
+
+
+#import time
 
 driver=webdriver.Chrome()  #initalize whroe with wedbdriver
 
-time.sleep(1)   #timer set to 1sec after 1 sec google open
+#time.sleep(1)   #timer set to 1sec after 1 sec google open
 
 driver.maximize_window()  #maximize window
 
@@ -20,7 +25,7 @@ url="https://www.saucedemo.com/"
 
 driver.get(url)
 
-time.sleep(2)
+#time.sleep(2)
 
 '''
 username= user-name
@@ -52,17 +57,33 @@ Absolute XPATH
 '''
 # username= driver.find_element(By.ID,"user-name")  #find by ID
 
-username= driver.find_element(By.XPATH,"//*[@id='user-name']")  #find locator by Xapth
+wait=WebDriverWait(driver,10)
+
+#Locate username
+username=wait.until(EC.visibility_of_element_located((By.ID,"user-name"))
+)
+
+# Locate password
+password = wait.until(
+    EC.visibility_of_element_located((By.ID, "password"))
+)
+
+# Locate login_button
+login_button = wait.until(
+    EC.element_to_be_clickable((By.ID,"login-button"))
+)
+
+# username= driver.find_element(By.XPATH,"//*[@id='user-name']")  #find locator by Xapth
 
 
-password= driver.find_element(By.ID,"password")
+# password= driver.find_element(By.ID,"password")
 
-login_button= driver.find_element(By.ID,"login-button")
+# login_button= driver.find_element(By.ID,"login-button")
 
 #Action
 username.send_keys("standard_user")
 
-time.sleep(2)
+#time.sleep(2)
 password.send_keys("secret_sauce")
 
 #actions chains or mouse actions
@@ -70,22 +91,20 @@ action=ActionChains(driver)
 
 action.click(login_button).perform()
 
+wait.until(EC.url_contains("inventory.html"))
+
+assert "inventory.html" in driver.current_url
+
+print("Login successful")
+
+product_sort=driver.find_element(By.CLASS_NAME,"product_sort_container")
+
+sort=Select(product_sort)
+
+sort.select_by_visible_text("Price (low to high)")
+
 # login_button.click()
 
-time.sleep(2)
-# can be used as assert
-# if "inventory" in driver.current_url:
-#     print("Login Successful")
-# else:
-#     print("Login Unsuccessful")    
-
-# assert driver.current_url=="https://www.saucedemo.com/inventory.html","Login failed"
-# assert "inventory" in driver.current_url,"login Failed"
-
-# dropdown_menu=driver.find_element(By.XPATH,"//select[@aria-label='Sorts products']")
-
-# select=Select(dropdown_menu)
-
-# print("Login Successful")
+#time.sleep(2)
 
 driver.quit()
